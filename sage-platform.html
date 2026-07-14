@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAGE Academy — Assessment Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --teal:#1B4B4A;--teal-dark:#123433;--ivory:#F7F5F1;--paper:#FFFFFF;--charcoal:#2B2E2E;
+  --gold:#B8934A;--gold-soft:#F1E6D2;--sage:#7A9471;--sage-soft:#E7EEE3;
+  --coral:#C4573B;--coral-soft:#F6E4DE;--line:#E3DFD5;--muted:#8A867A;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--ivory);color:var(--charcoal);font-family:'Inter',sans-serif;}
+h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;margin:0;}
+.mono{font-family:'IBM Plex Mono',monospace;}
+button{font-family:'Inter',sans-serif;cursor:pointer;}
+input,select,textarea{font-family:'Inter',sans-serif;}
+
+/* ---- Login ---- */
+#login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.login-card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:36px 32px;max-width:420px;width:100%;}
+.login-mark{width:44px;height:44px;border-radius:50%;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:600;color:var(--gold);margin-bottom:14px;}
+.login-card h1{font-size:22px;color:var(--teal);margin-bottom:4px;}
+.login-card .sub{font-size:12.5px;color:var(--muted);margin-bottom:22px;letter-spacing:.3px;text-transform:uppercase;}
+.role-tabs{display:flex;gap:6px;margin-bottom:16px;background:var(--ivory);padding:4px;border-radius:8px;}
+.role-tabs button{flex:1;padding:9px;border:none;border-radius:6px;background:transparent;font-size:13px;font-weight:600;color:var(--muted);}
+.role-tabs button.active{background:var(--teal);color:var(--ivory);}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:11.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;}
+.field select,.field input{width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:7px;font-size:14px;}
+.btn{font-weight:600;font-size:13.5px;border:none;border-radius:8px;padding:11px 18px;transition:.15s;}
+.btn-primary{background:var(--teal);color:var(--ivory);}
+.btn-primary:hover{background:var(--teal-dark);}
+.btn-block{width:100%;}
+.hint{font-size:11.5px;color:var(--muted);margin-top:14px;line-height:1.5;padding-top:12px;border-top:1px solid var(--line);}
+
+/* ---- App shell ---- */
+#app{display:none;}
+.topbar{background:var(--teal);color:var(--ivory);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:20;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-mark{width:30px;height:30px;border-radius:50%;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:600;font-size:13px;color:var(--gold);}
+.brand h1{font-size:16px;color:var(--ivory);}
+.brand span{font-size:10.5px;color:#B9CFCE;letter-spacing:1px;text-transform:uppercase;}
+.who{display:flex;align-items:center;gap:12px;font-size:12.5px;}
+.who .name{font-weight:600;}
+.who .role{background:var(--gold);color:var(--teal-dark);padding:3px 9px;border-radius:20px;font-size:10.5px;font-weight:700;text-transform:uppercase;}
+.logout{background:rgba(255,255,255,.1);border:none;color:var(--ivory);padding:7px 12px;border-radius:6px;font-size:12px;}
+
+.tabs{display:flex;gap:4px;background:var(--paper);border-bottom:1px solid var(--line);padding:0 20px;overflow-x:auto;position:sticky;top:57px;z-index:19;}
+.tabs button{background:none;border:none;padding:13px 14px;font-size:13px;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap;}
+.tabs button.active{color:var(--teal);border-bottom-color:var(--gold);}
+
+.wrap{max-width:1100px;margin:0 auto;padding:22px 20px 60px;}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:18px;}
+.card h2{font-size:17px;margin-bottom:2px;}
+.muted{color:var(--muted);font-size:12.5px;}
+.row-flex{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:.2px;white-space:nowrap;}
+.pill-sage{background:var(--sage-soft);color:#4C5F45;}
+.pill-gold{background:var(--gold-soft);color:#7A5F26;}
+.pill-coral{background:var(--coral-soft);color:var(--coral);}
+.pill-neutral{background:#EDEBE3;color:var(--muted);}
+.pill-teal{background:#DCE9E8;color:var(--teal);}
+
+.btn-sm{font-size:12px;padding:7px 12px;border-radius:6px;}
+.btn-gold{background:var(--gold);color:var(--teal-dark);}
+.btn-sage{background:var(--sage);color:#fff;}
+.btn-coral{background:var(--coral);color:#fff;}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--charcoal);}
+.btn:disabled{background:#E4E1D8!important;color:#A9A498!important;cursor:default;}
+
+.unit-select{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.unit-chip{padding:7px 13px;border-radius:20px;border:1px solid var(--line);background:var(--paper);font-size:12.5px;font-weight:600;color:var(--muted);}
+.unit-chip.active{background:var(--teal);color:var(--ivory);border-color:var(--teal);}
+
+.qrow{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);}
+.qrow:last-child{border-bottom:none;}
+.qnum{font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:600;color:var(--teal);min-width:42px;}
+.qtext{flex:1;font-size:13.5px;}
+.section-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin:18px 0 6px;}
+.section-label:first-child{margin-top:0;}
+
+table{width:100%;border-collapse:collapse;font-size:12.5px;}
+th{text-align:left;font-size:10.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);padding:0 8px 8px;border-bottom:1px solid var(--line);}
+td{padding:9px 8px;border-bottom:1px solid var(--line);}
+.matrix-cell{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;}
+.mc-pass{background:var(--sage);}
+.mc-rev{background:var(--coral);}
+.mc-pending{background:var(--gold);}
+.mc-none{background:#E4E1D8;color:var(--muted);}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:18px;}
+.stat{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px;}
+.stat .num{font-family:'Fraunces',serif;font-size:26px;color:var(--teal);}
+.stat .lbl{font-size:11.5px;color:var(--muted);margin-top:2px;}
+
+.review-box{background:var(--ivory);border:1px solid var(--line);border-radius:9px;padding:14px;margin-top:8px;}
+textarea{width:100%;border:1px solid var(--line);border-radius:7px;padding:9px;font-size:13px;resize:vertical;min-height:60px;margin:8px 0;}
+
+.num-input{width:56px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;font-size:13px;text-align:center;}
+.config-row{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--line);flex-wrap:wrap;}
+.config-row:last-child{border-bottom:none;}
+
+.feed-item{display:flex;gap:10px;font-size:12.5px;padding:9px 0;border-bottom:1px solid var(--line);}
+.feed-item:last-child{border-bottom:none;}
+.feed-meta{color:var(--muted);font-size:10.5px;}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--teal-dark);color:var(--ivory);padding:12px 20px;border-radius:8px;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.2);opacity:0;transition:.25s;pointer-events:none;max-width:92vw;z-index:50;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.badge-unpub{background:var(--coral-soft);color:var(--coral);font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:6px;}
+@media(max-width:640px){
+  table,thead,tbody,th,td,tr{display:block;}
+  thead{display:none;}
+  td{border:none;padding:3px 0;}
+  tr{padding:8px 0;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="login-card">
+    <div class="login-mark">SA</div>
+    <h1>SAGE Academy</h1>
+    <div class="sub">Assessment Notification Platform</div>
+    <div class="role-tabs" id="loginRoleTabs">
+      <button data-role="student" class="active">Student</button>
+      <button data-role="assessor">Assessor</button>
+      <button data-role="admin">Admin</button>
+    </div>
+    <div id="loginFields"></div>
+    <button class="btn btn-primary btn-block" onclick="doLogin()">Sign in</button>
+    <div class="hint">Demo sign-in — picks an identity from the roster instead of a password, so you can test all three roles. A real deployment would use email magic-link sign-in per person.</div>
+  </div>
+</div>
+
+<div id="app">
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">SA</div>
+      <div><h1>SAGE Academy</h1><span id="brandSub">Assessment Platform</span></div>
+    </div>
+    <div class="who">
+      <span class="name" id="whoName"></span>
+      <span class="role" id="whoRole"></span>
+      <button class="logout" onclick="logout()">Switch user</button>
+    </div>
+  </div>
+  <div class="tabs" id="tabs"></div>
+  <div class="wrap" id="content"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===================== DATA MODEL ===================== */
+const STORAGE_KEY = "sage-lms-db-v2";
+let db = null;
+let session = null; // {role, id}
+let activeTab = null;
+let uiState = {}; // scratch: selected unit, expanded question, etc per view
+
+function defaultDB(){
+  const units = [];
+  for(let i=1;i<=10;i++){
+    const knowledgeQuestions = Array.from({length:10},(_,k)=>'1.'+(k+1));
+    // Demonstrates non-sequential numbering, e.g. 2.1, 2.2, then 3.1, 3.2, 3.3
+    const performanceQuestions = i===1 ? ["2.1","2.2","3.1","3.2","3.3"] : Array.from({length:5},(_,k)=>'2.'+(k+1));
+    units.push({
+      id:"u"+i,
+      title:"Unit "+i+" — "+["Oral Health Education","Infection Control","Medical Emergencies","Radiography Principles","IR(ME)R Compliance","Patient Communication","Health & Safety","Record Keeping","Instrument Decontamination","Professionalism & Ethics"][i-1],
+      published: i<=3, // first 3 published by default so there's something to demo
+      knowledgeQuestions,
+      performanceQuestions,
+    });
+  }
+  return {
+    students:[
+      {id:"s1", name:"John Smith", email:"john.smith@student.sageacademy.uk", assessorId:"a1"},
+      {id:"s2", name:"Sarah Jones", email:"sarah.jones@student.sageacademy.uk", assessorId:"a1"},
+      {id:"s3", name:"Amara Okafor", email:"amara.okafor@student.sageacademy.uk", assessorId:"a2"},
+    ],
+    assessors:[
+      {id:"a1", name:"Mrs Sarah Brown", email:"s.brown@sageacademy.uk"},
+      {id:"a2", name:"Dr Vinika Patel", email:"v.patel@sageacademy.uk"},
+    ],
+    admin:{id:"admin1", name:"Pinkesh Rajvanshi", email:"pinkesh@sageacademy.uk"},
+    units,
+    // submissions[studentId][unitId][section][itemKey] = {status, feedback, uploadedAt, reviewedAt}
+    submissions:{},
+    iqa:{}, // iqa[studentId][unitId] = {done, doneAt, doneBy}
+    feed:[], // notification log, newest first
+  };
+}
+
+async function loadDB(){
+  try{
+    const res = await window.storage.get(STORAGE_KEY, true);
+    db = JSON.parse(res.value);
+  }catch(e){
+    db = defaultDB();
+    await saveDB();
+  }
+}
+async function saveDB(){
+  try{ await window.storage.set(STORAGE_KEY, JSON.stringify(db), true); }
+  catch(e){ console.error("storage save failed", e); }
+}
+
+function ensureSub(studentId, unitId, section){
+  db.submissions[studentId] = db.submissions[studentId] || {};
+  db.submissions[studentId][unitId] = db.submissions[studentId][unitId] || {};
+  db.submissions[studentId][unitId][section] = db.submissions[studentId][unitId][section] || {};
+  return db.submissions[studentId][unitId][section];
+}
+function getItem(studentId, unitId, section, key){
+  const sec = ensureSub(studentId, unitId, section);
+  return sec[key] || {status:"not_started"};
+}
+function setItem(studentId, unitId, section, key, patch){
+  const sec = ensureSub(studentId, unitId, section);
+  sec[key] = Object.assign({status:"not_started"}, sec[key]||{}, patch);
+  return sec[key];
+}
+function nowStamp(){ return new Date().toISOString().slice(0,16).replace('T',' '); }
+
+function logNotification(from, to, subject, body, kind){
+  db.feed.unshift({time: nowStamp(), from, to, subject, body, kind});
+}
+
+function studentById(id){ return db.students.find(s=>s.id===id); }
+function assessorById(id){ return db.assessors.find(a=>a.id===id); }
+function unitById(id){ return db.units.find(u=>u.id===id); }
+function assignedStudents(assessorId){ return db.students.filter(s=>s.assessorId===assessorId); }
+function labelFor(unit, section, key){
+  if(section==='knowledge') return unit.knowledgeQuestions[parseInt(key.replace('k',''))] || '?';
+  if(section==='performance') return unit.performanceQuestions[parseInt(key.replace('p',''))] || '?';
+  return section[0].toUpperCase()+section.slice(1);
+}
+
+/* ===================== TOAST ===================== */
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window._tt);
+  window._tt = setTimeout(()=>t.classList.remove('show'), 3400);
+}
+
+/* ===================== LOGIN ===================== */
+let loginRole = "student";
+function renderLoginFields(){
+  const el = document.getElementById('loginFields');
+  if(loginRole==="admin"){
+    el.innerHTML = `<div class="field"><label>Admin</label><select id="loginId"><option value="${db.admin.id}">${db.admin.name}</option></select></div>`;
+  } else if(loginRole==="assessor"){
+    el.innerHTML = `<div class="field"><label>Assessor</label><select id="loginId">${db.assessors.map(a=>`<option value="${a.id}">${a.name}</option>`).join('')}</select></div>`;
+  } else {
+    el.innerHTML = `<div class="field"><label>Student</label><select id="loginId">${db.students.map(s=>`<option value="${s.id}">${s.name}</option>`).join('')}</select></div>`;
+  }
+}
+document.getElementById('loginRoleTabs').addEventListener('click', e=>{
+  const b = e.target.closest('button'); if(!b) return;
+  loginRole = b.dataset.role;
+  [...document.querySelectorAll('#loginRoleTabs button')].forEach(x=>x.classList.toggle('active', x===b));
+  renderLoginFields();
+});
+function doLogin(){
+  const id = document.getElementById('loginId').value;
+  session = {role: loginRole, id};
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  const name = loginRole==='admin' ? db.admin.name : loginRole==='assessor' ? assessorById(id).name : studentById(id).name;
+  document.getElementById('whoName').textContent = name;
+  document.getElementById('whoRole').textContent = loginRole;
+  setupTabs();
+}
+function logout(){
+  session = null;
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login').style.display = 'flex';
+}
+
+/* ===================== TABS ===================== */
+function setupTabs(){
+  let tabDefs;
+  if(session.role==='student') tabDefs = [['assessments','My assessments'],['inbox','My notifications']];
+  else if(session.role==='assessor') tabDefs = [['queue','Review queue'],['matrix','All students'],['iqa','IQA sampling'],['inbox','Notifications']];
+  else tabDefs = [['config','Curriculum config'],['people','Students & assessors'],['overview','Overview'],['inbox','Notification log']];
+  const tabsEl = document.getElementById('tabs');
+  tabsEl.innerHTML = tabDefs.map((t,i)=>`<button data-tab="${t[0]}" class="${i===0?'active':''}">${t[1]}</button>`).join('');
+  activeTab = tabDefs[0][0];
+  tabsEl.onclick = e=>{
+    const b = e.target.closest('button'); if(!b) return;
+    activeTab = b.dataset.tab;
+    [...tabsEl.children].forEach(x=>x.classList.toggle('active', x===b));
+    render();
+  };
+  render();
+}
+
+/* ===================== RENDER ROUTER ===================== */
+function render(){
+  const c = document.getElementById('content');
+  if(session.role==='student'){
+    if(activeTab==='assessments') c.innerHTML = studentAssessmentsView();
+    else c.innerHTML = inboxView(studentById(session.id).email);
+  } else if(session.role==='assessor'){
+    if(activeTab==='queue') c.innerHTML = assessorQueueView();
+    else if(activeTab==='matrix') c.innerHTML = assessorMatrixView();
+    else if(activeTab==='iqa') c.innerHTML = assessorIqaView();
+    else c.innerHTML = inboxView(assessorById(session.id).email);
+  } else {
+    if(activeTab==='config') c.innerHTML = adminConfigView();
+    else if(activeTab==='people') c.innerHTML = adminPeopleView();
+    else if(activeTab==='overview') c.innerHTML = adminOverviewView();
+    else c.innerHTML = inboxView(db.admin.email);
+  }
+}
+
+/* ===================== STUDENT VIEW ===================== */
+function studentAssessmentsView(){
+  const student = studentById(session.id);
+  const published = db.units.filter(u=>u.published);
+  if(!uiState.studentUnit || !published.find(u=>u.id===uiState.studentUnit)) uiState.studentUnit = published[0] ? published[0].id : null;
+  if(!published.length) return `<div class="card"><p class="muted">No units have been published yet. Check back once your admin publishes the curriculum.</p></div>`;
+  const unit = unitById(uiState.studentUnit);
+
+  function itemRow(section, key, label){
+    const item = getItem(student.id, unit.id, section, key);
+    const map = {
+      not_started:['pill-neutral','Not uploaded','Upload'],
+      uploaded:['pill-gold','Uploaded — awaiting review',null],
+      under_review:['pill-gold','Under review',null],
+      revision_needed:['pill-coral','Revision needed','Re-upload'],
+      pass:['pill-sage','Passed',null],
+    };
+    const [cls,label2,actionLabel] = map[item.status];
+    const canUpload = item.status==='not_started' || item.status==='revision_needed';
+    return `<div class="qrow">
+      <div class="qnum">${label}</div>
+      <div class="qtext">${item.status==='revision_needed' && item.feedback ? `<div style="color:var(--coral);font-size:12px;margin-bottom:2px;">Assessor note: ${escapeHtml(item.feedback)}</div>`:''}<span class="pill ${cls}">${label2}</span></div>
+      ${canUpload ? `<button class="btn btn-sm btn-primary" style="background:var(--teal);color:#fff;" onclick="studentUpload('${section}','${key}')">${actionLabel}</button>` : ''}
+    </div>`;
+  }
+
+  let html = `<div class="card"><h2>Welcome, ${student.name.split(' ')[0]}</h2><p class="muted">Assessor: ${assessorById(student.assessorId).name}</p></div>`;
+  html += `<div class="unit-select">${published.map(u=>`<button class="unit-chip ${u.id===unit.id?'active':''}" onclick="uiState.studentUnit='${u.id}';render();">${u.title.split(' — ')[0]}</button>`).join('')}</div>`;
+  html += `<div class="card"><h2 style="font-size:16px;margin-bottom:8px;">${unit.title}</h2>`;
+  html += `<div class="section-label">Preparation</div>`;
+  html += itemRow('preparation','doc','Prep');
+  html += `<div class="section-label">Knowledge Evidence</div>`;
+  unit.knowledgeQuestions.forEach((q,idx)=> html += itemRow('knowledge','k'+idx,q));
+  html += `<div class="section-label">Performance Evidence</div>`;
+  unit.performanceQuestions.forEach((q,idx)=> html += itemRow('performance','p'+idx,q));
+  html += `<div class="section-label">Reflection</div>`;
+  html += itemRow('reflection','doc','Refl.');
+  html += `</div>`;
+  return html;
+}
+
+function studentUpload(section, key){
+  const student = studentById(session.id);
+  const unit = unitById(uiState.studentUnit);
+  setItem(student.id, unit.id, section, key, {status:'uploaded', uploadedAt: nowStamp(), feedback:null});
+  const assessor = assessorById(student.assessorId);
+  const label = labelFor(unit, section, key);
+  logNotification(student.email, assessor.email, `Upload: ${unit.title} — ${label}`,
+    `${student.name} has uploaded evidence for ${label} (${unit.title}) on PebblePad. Please review.`, 'sage');
+  saveDB();
+  toast(`${assessor.name} notified by email.`);
+  render();
+}
+
+/* ===================== ASSESSOR VIEW ===================== */
+function assessorQueueView(){
+  const students = assignedStudents(session.id);
+  const published = db.units.filter(u=>u.published);
+  let rows = [];
+  students.forEach(st=>{
+    published.forEach(u=>{
+      ['preparation','knowledge','performance','reflection'].forEach(section=>{
+        const keys = section==='knowledge' ? u.knowledgeQuestions.map((_,i)=>'k'+i)
+                   : section==='performance' ? u.performanceQuestions.map((_,i)=>'p'+i)
+                   : ['doc'];
+        keys.forEach(key=>{
+          const item = getItem(st.id, u.id, section, key);
+          if(item.status==='uploaded' || item.status==='under_review'){
+            const label = labelFor(u, section, key);
+            rows.push({st,u,section,key,label,item});
+          }
+        });
+      });
+    });
+  });
+  let html = `<div class="card"><h2>Review queue</h2><p class="muted">${rows.length} item(s) awaiting your review</p></div>`;
+  if(!rows.length) html += `<div class="card"><p class="muted">Nothing pending — you're all caught up.</p></div>`;
+  rows.forEach((r,idx)=>{
+    const rid = `rev_${idx}`;
+    html += `<div class="card">
+      <div class="row-flex">
+        <div><h2 style="font-size:15px;">${r.st.name} — ${r.u.title.split(' — ')[0]}, ${r.label}</h2><p class="muted mono">Uploaded ${r.item.uploadedAt||''}</p></div>
+        <button class="btn btn-sm btn-ghost" onclick="toggleReview('${rid}')">Open</button>
+      </div>
+      <div class="review-box" id="${rid}" style="display:none;">
+        <textarea id="fb_${rid}" placeholder="Feedback notes for the student...">${r.item.feedback||''}</textarea>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-sm btn-coral" onclick="issueDecision('${r.st.id}','${r.u.id}','${r.section}','${r.key}','revision_needed','${rid}')">Revision needed</button>
+          <button class="btn btn-sm btn-sage" onclick="issueDecision('${r.st.id}','${r.u.id}','${r.section}','${r.key}','pass','${rid}')">Pass — issue feedback</button>
+        </div>
+      </div>
+    </div>`;
+  });
+  return html;
+}
+function toggleReview(rid){
+  const el = document.getElementById(rid);
+  const wasHidden = el.style.display==='none';
+  el.style.display = wasHidden ? 'block' : 'none';
+}
+function issueDecision(studentId, unitId, section, key, decision, rid){
+  const fb = document.getElementById('fb_'+rid).value.trim();
+  const student = studentById(studentId);
+  const unit = unitById(unitId);
+  const assessor = assessorById(session.id);
+  setItem(studentId, unitId, section, key, {status: decision, feedback: fb, reviewedAt: nowStamp()});
+  const label = labelFor(unit, section, key);
+  const verdict = decision==='pass' ? 'Feedback issued — passed' : 'Revision needed';
+  logNotification(assessor.email, student.email, `Feedback: ${unit.title} — ${label}`,
+    `${verdict} for ${label} (${unit.title}).${fb ? ' Note: '+fb : ''} Please login to PebblePad to review.`, decision==='pass'?'sage':'coral');
+  saveDB();
+  toast(`${student.name} notified — ${verdict.toLowerCase()}.`);
+  render();
+}
+
+function assessorMatrixView(){
+  const students = assignedStudents(session.id);
+  const published = db.units.filter(u=>u.published);
+  if(!uiState.matrixUnit || !published.find(u=>u.id===uiState.matrixUnit)) uiState.matrixUnit = published[0]?published[0].id:null;
+  if(!published.length) return `<div class="card"><p class="muted">No units published yet.</p></div>`;
+  const unit = unitById(uiState.matrixUnit);
+  const kCols = unit.knowledgeQuestions;
+  const pCols = unit.performanceQuestions;
+  function cellFor(st, section, key){
+    const item = getItem(st.id, unit.id, section, key);
+    const map = {not_started:['mc-none','–'], uploaded:['mc-pending','U'], under_review:['mc-pending','U'], revision_needed:['mc-rev','R'], pass:['mc-pass','P']};
+    const [cls,label] = map[item.status];
+    return `<div class="matrix-cell ${cls}" title="${label==='U'?'Uploaded, pending review':label==='R'?'Revision needed':label==='P'?'Passed':'Not started'}">${label}</div>`;
+  }
+  let html = `<div class="card"><h2>All students — ${unit.title}</h2><p class="muted">P = Pass · R = Revision needed · U = Uploaded, pending · – = not started</p></div>`;
+  html += `<div class="unit-select">${published.map(u=>`<button class="unit-chip ${u.id===unit.id?'active':''}" onclick="uiState.matrixUnit='${u.id}';render();">${u.title.split(' — ')[0]}</button>`).join('')}</div>`;
+  html += `<div class="card" style="overflow-x:auto;"><table><thead><tr><th>Student</th>${kCols.map(c=>`<th>${c}</th>`).join('')}${pCols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>`;
+  students.forEach(st=>{
+    html += `<tr><td style="font-weight:600;white-space:nowrap;">${st.name}</td>`;
+    kCols.forEach((_,i)=> html += `<td>${cellFor(st,'knowledge','k'+i)}</td>`);
+    pCols.forEach((_,i)=> html += `<td>${cellFor(st,'performance','p'+i)}</td>`);
+    html += `</tr>`;
+  });
+  html += `</tbody></table></div>`;
+  return html;
+}
+
+function assessorIqaView(){
+  const students = assignedStudents(session.id);
+  const published = db.units.filter(u=>u.published);
+  let html = `<div class="card"><h2>IQA sampling</h2><p class="muted">Mark a student's unit as sampled for internal quality assurance. This notifies the admin/IQA manager.</p></div>`;
+  students.forEach(st=>{
+    published.forEach(u=>{
+      const rec = (db.iqa[st.id] && db.iqa[st.id][u.id]) || {done:false};
+      html += `<div class="card">
+        <div class="row-flex">
+          <div><h2 style="font-size:14.5px;">${st.name} — ${u.title.split(' — ')[0]}</h2>${rec.done?`<p class="muted mono">Sampled ${rec.doneAt}</p>`:''}</div>
+          <button class="btn btn-sm ${rec.done?'btn-ghost':'btn-gold'}" ${rec.done?'disabled':''} onclick="markIqa('${st.id}','${u.id}')">${rec.done?'Sampling complete':'Mark IQA sampling done'}</button>
+        </div>
+      </div>`;
+    });
+  });
+  return html;
+}
+function markIqa(studentId, unitId){
+  db.iqa[studentId] = db.iqa[studentId] || {};
+  const assessor = assessorById(session.id);
+  const student = studentById(studentId);
+  const unit = unitById(unitId);
+  db.iqa[studentId][unitId] = {done:true, doneAt: nowStamp(), doneBy: assessor.name};
+  logNotification(assessor.email, db.admin.email, `IQA sampling complete — ${student.name}`,
+    `IQA sampling has been completed by ${assessor.name} for ${student.name}, ${unit.title}.`, 'gold');
+  saveDB();
+  toast('Admin notified — IQA sampling logged.');
+  render();
+}
+
+/* ===================== ADMIN VIEW ===================== */
+function questionEditorRows(unit, section, questions){
+  return questions.map((q,idx)=>`
+    <div class="qrow" style="padding:7px 0;">
+      <input type="text" class="mono" style="flex:1;padding:7px 9px;border:1px solid var(--line);border-radius:6px;font-size:13px;" id="qlabel_${unit.id}_${section}_${idx}" value="${escapeHtml(q)}">
+      <button class="btn btn-sm btn-ghost" style="color:var(--coral);border-color:var(--coral-soft);" onclick="removeQuestion('${unit.id}','${section}',${idx})">Remove</button>
+    </div>`).join('');
+}
+function adminConfigView(){
+  let html = `<div class="card"><h2>Curriculum configuration</h2><p class="muted">Edit each unit's name and its individual Knowledge Evidence / Performance Evidence questions — add, remove, or renumber freely (e.g. 2.1, 2.2, then 3.1, 3.2 is fine). Students and assessors only ever see published units.</p></div>`;
+  db.units.forEach(u=>{
+    html += `<div class="card">
+      <div style="margin-bottom:10px;">
+        <label class="muted" style="font-size:11px;display:block;margin-bottom:4px;">Unit name</label>
+        <input type="text" id="title_${u.id}" value="${escapeHtml(u.title)}" style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:6px;font-size:13.5px;font-weight:600;">
+        ${u.published?'':'<span class="badge-unpub">DRAFT — not visible</span>'}
+      </div>
+      <div class="section-label">Knowledge Evidence</div>
+      <div id="klist_${u.id}">${questionEditorRows(u,'knowledge',u.knowledgeQuestions)}</div>
+      <button class="btn btn-sm btn-ghost" onclick="addQuestion('${u.id}','knowledge')">+ Add knowledge question</button>
+
+      <div class="section-label">Performance Evidence</div>
+      <div id="plist_${u.id}">${questionEditorRows(u,'performance',u.performanceQuestions)}</div>
+      <button class="btn btn-sm btn-ghost" onclick="addQuestion('${u.id}','performance')">+ Add performance criterion</button>
+
+      <div class="row-flex" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line);">
+        <span class="muted">Preparation and Reflection stay as single sign-off items (no numbering).</span>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-sm btn-primary" style="background:var(--teal);color:#fff;" onclick="saveUnitConfig('${u.id}')">Save</button>
+          <button class="btn btn-sm ${u.published?'btn-ghost':'btn-gold'}" onclick="togglePublish('${u.id}')">${u.published?'Unpublish':'Publish'}</button>
+        </div>
+      </div>
+    </div>`;
+  });
+  return html;
+}
+function addQuestion(unitId, section){
+  const u = unitById(unitId);
+  const arr = section==='knowledge' ? u.knowledgeQuestions : u.performanceQuestions;
+  const prefix = section==='knowledge' ? '1.' : '2.';
+  arr.push(prefix+(arr.length+1));
+  saveDB();
+  toast('Question added — edit its label, then Save.');
+  render();
+}
+function removeQuestion(unitId, section, idx){
+  const u = unitById(unitId);
+  const arr = section==='knowledge' ? u.knowledgeQuestions : u.performanceQuestions;
+  arr.splice(idx,1);
+  saveDB();
+  toast('Question removed.');
+  render();
+}
+function saveUnitConfig(unitId){
+  const u = unitById(unitId);
+  const newTitle = document.getElementById('title_'+unitId).value.trim();
+  if(newTitle) u.title = newTitle;
+  u.knowledgeQuestions = u.knowledgeQuestions.map((_,idx)=> document.getElementById(`qlabel_${unitId}_knowledge_${idx}`).value.trim() || '?');
+  u.performanceQuestions = u.performanceQuestions.map((_,idx)=> document.getElementById(`qlabel_${unitId}_performance_${idx}`).value.trim() || '?');
+  saveDB();
+  toast(`${u.title.split(' — ')[0]} saved.`);
+  render();
+}
+function togglePublish(unitId){
+  const u = unitById(unitId);
+  u.published = !u.published;
+  saveDB();
+  toast(`${u.title.split(' — ')[0]} ${u.published?'published':'unpublished'}.`);
+  render();
+}
+
+function adminPeopleView(){
+  let html = `<div class="card"><h2>Students</h2></div>`;
+  html += `<div class="card"><table><thead><tr><th>Name</th><th>Email</th><th>Assessor</th></tr></thead><tbody>`;
+  db.students.forEach(s=> html += `<tr><td>${s.name}</td><td class="mono muted">${s.email}</td><td>${assessorById(s.assessorId).name}</td></tr>`);
+  html += `</tbody></table></div>`;
+  html += `<div class="card row-flex"><div class="field" style="flex:1;min-width:140px;"><label>New student name</label><input id="newStudentName" placeholder="Full name"></div>
+    <div class="field" style="flex:1;min-width:140px;"><label>Assign to</label><select id="newStudentAssessor">${db.assessors.map(a=>`<option value="${a.id}">${a.name}</option>`).join('')}</select></div>
+    <button class="btn btn-sm btn-primary" style="background:var(--teal);color:#fff;height:38px;" onclick="addStudent()">Add student</button></div>`;
+
+  html += `<div class="card"><h2>Assessors</h2></div>`;
+  html += `<div class="card"><table><thead><tr><th>Name</th><th>Email</th><th>Assigned students</th></tr></thead><tbody>`;
+  db.assessors.forEach(a=> html += `<tr><td>${a.name}</td><td class="mono muted">${a.email}</td><td>${assignedStudents(a.id).length}</td></tr>`);
+  html += `</tbody></table></div>`;
+  return html;
+}
+function addStudent(){
+  const name = document.getElementById('newStudentName').value.trim();
+  const assessorId = document.getElementById('newStudentAssessor').value;
+  if(!name) return toast('Enter a student name first.');
+  const id = 's'+(Date.now());
+  const email = name.toLowerCase().replace(/[^a-z ]/g,'').replace(/\s+/g,'.')+'@student.sageacademy.uk';
+  db.students.push({id,name,email,assessorId});
+  saveDB();
+  toast(`${name} added.`);
+  render();
+}
+
+function adminOverviewView(){
+  const totalStudents = db.students.length;
+  let uploaded=0, pass=0, revision=0, pending=0;
+  Object.values(db.submissions).forEach(byUnit=>Object.values(byUnit).forEach(bySection=>Object.values(bySection).forEach(item=>{
+    if(item.status==='pass') pass++;
+    else if(item.status==='revision_needed') revision++;
+    else if(item.status==='uploaded'||item.status==='under_review') pending++;
+    if(item.status!=='not_started') uploaded++;
+  })));
+  const iqaCount = Object.values(db.iqa).reduce((n,byUnit)=>n+Object.values(byUnit).filter(r=>r.done).length,0);
+  let html = `<div class="stats">
+    <div class="stat"><div class="num mono">${totalStudents}</div><div class="lbl">Students</div></div>
+    <div class="stat"><div class="num mono">${uploaded}</div><div class="lbl">Items submitted</div></div>
+    <div class="stat"><div class="num mono" style="color:var(--sage)">${pass}</div><div class="lbl">Passed</div></div>
+    <div class="stat"><div class="num mono" style="color:var(--coral)">${revision}</div><div class="lbl">Revision needed</div></div>
+    <div class="stat"><div class="num mono" style="color:var(--gold)">${pending}</div><div class="lbl">Awaiting review</div></div>
+    <div class="stat"><div class="num mono">${iqaCount}</div><div class="lbl">IQA samples logged</div></div>
+  </div>`;
+  html += `<div class="card"><h2>Published units</h2><p class="muted">${db.units.filter(u=>u.published).map(u=>u.title.split(' — ')[0]).join(', ')||'None yet'}</p></div>`;
+  return html;
+}
+
+/* ===================== SHARED: INBOX / NOTIFICATION LOG ===================== */
+function inboxView(myEmail){
+  const isAdmin = session.role==='admin';
+  const items = isAdmin ? db.feed : db.feed.filter(f=>f.to===myEmail || f.from===myEmail);
+  let html = `<div class="card"><h2>${isAdmin?'Full notification log':'Your notifications'}</h2><p class="muted">Simulated inbox — shows exactly what would be emailed, and from which address, once this is deployed with real email.</p></div>`;
+  html += `<div class="card"><div id="feedList">`;
+  if(!items.length) html += `<p class="muted">No notifications yet.</p>`;
+  items.slice(0,80).forEach(f=>{
+    html += `<div class="feed-item">
+      <span class="pill ${f.kind==='sage'?'pill-sage':f.kind==='coral'?'pill-coral':'pill-gold'}" style="min-width:8px;padding:4px;">&nbsp;</span>
+      <div style="flex:1;">
+        <div><strong>${escapeHtml(f.subject)}</strong></div>
+        <div class="feed-meta">From ${f.from} → To ${f.to} · ${f.time}</div>
+        <div style="margin-top:2px;">${escapeHtml(f.body)}</div>
+      </div>
+    </div>`;
+  });
+  html += `</div></div>`;
+  return html;
+}
+
+function escapeHtml(s){
+  return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ===================== INIT ===================== */
+(async function init(){
+  await loadDB();
+  renderLoginFields();
+})();
+</script>
+</body>
+</html>
