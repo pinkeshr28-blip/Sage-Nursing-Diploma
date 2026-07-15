@@ -1,19 +1,48 @@
-# Sage Nursing Diploma — Assessment Notification Platform
+# SAGE Academy — Assessment Notification Platform
 
-A prototype notification and tracking layer that sits around PebblePad for SAGE Academy's dental nursing courses. Students flag uploads, assessors mark items as pass / revision needed and issue feedback, admins configure the curriculum (units, Knowledge Evidence and Performance Evidence questions) and publish it, and IQA sampling is logged automatically.
+A live, multi-user notification and tracking layer that sits around PebblePad for SAGE Academy's nursing diploma courses. Candidates flag uploads, assessors mark items as pass / revision needed and issue feedback, admins configure the curriculum and invite people in, and IQA sampling is logged automatically. Everything is backed by a real database with row-level security — no more in-browser demo storage.
 
-## Files
+## Stack
 
-- **`sage-platform.html`** — the working prototype. Open it directly in any browser (no build step, no server). Uses in-browser storage, so data only persists within a single browser/device for now — see "Next steps" below for turning this into a real multi-user, hosted system.
-- **`SAGE_Academy_Notification_System_Spec.docx`** — the technical specification: architecture, database design, notification system, GDPR/security notes, deployment steps, and estimated running costs for a production build.
+- **Next.js** (App Router, TypeScript) — deployed on Vercel
+- **Supabase** — Postgres database, Auth (passwordless invite links + magic-link sign-in), Row-Level Security
+- **Resend** — transactional email, sending from a verified `sageacademy.uk` domain
 
-## Try it
+## Roles
 
-Open `sage-platform.html` in a browser. Sign in as:
-- **Student** (e.g. John Smith) → upload an item under a published unit
-- **Assessor** (e.g. Mrs Sarah Brown) → review it in the queue, mark Pass or Revision needed
-- **Admin** (Pinkesh Rajvanshi) → edit units, questions, and publish/unpublish
+- **Admin** — invites people by email, picking their role (Assessor or Candidate) and, for candidates, their cohort (Cohort 1–5 or E-Learning). Also manages the curriculum (units, Knowledge/Performance Evidence questions, publish/unpublish) and sees an activity overview and full notification log.
+- **Assessor** — after signing in, picks which cohort to work with (any assessor can pick any cohort — there's no fixed assessor-per-candidate assignment). Reviews the upload queue, marks pass/revision needed with feedback, views a per-unit matrix across all candidates in the selected cohort, and logs IQA sampling.
+- **Candidate** — uploads evidence per unit (Preparation, Knowledge Evidence, Performance Evidence, Reflection), sees status and assessor feedback, and has a personal notification log.
 
-## Next steps
+Accounts are invite-only — there is no open sign-up.
 
-To turn this into a real, hosted system with actual student/assessor logins and real email notifications (rather than the simulated in-app log), see Section 6 ("Deployment Instructions") of the spec document. In short: Next.js on Vercel, Supabase for the database and email magic-link login, and a transactional email provider (Resend/SendGrid) sending from a verified subdomain such as `notifications@sageacademy.uk`.
+## Local development
+
+```bash
+npm install
+npm run dev
+```
+
+Requires a `.env.local` (git-ignored) with:
+
+```
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+RESEND_API_KEY=
+EMAIL_FROM=SAGE Academy <notifications@sageacademy.uk>
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+CRON_SECRET=
+```
+
+Apply `supabase/migrations/0001_init.sql` via the Supabase SQL Editor before first run — it creates all tables, RLS policies, and seeds the starting curriculum and cohort list.
+
+In Supabase, also configure Custom SMTP (Authentication → Emails → SMTP Settings) to route auth emails through Resend, and add your app's URL to Authentication → URL Configuration → Redirect URLs.
+
+## Deployment
+
+Push to GitHub, import into Vercel, and set the same environment variables there (with `NEXT_PUBLIC_SITE_URL` pointed at the production URL). `vercel.json` configures a daily cron job (`/api/cron/overdue`) that reminds assessors and admins about items awaiting feedback for 7+ days.
+
+## `legacy/`
+
+The original click-through prototype (`sage-platform.html`, in-browser storage only) and the initial technical spec document, kept for reference.
