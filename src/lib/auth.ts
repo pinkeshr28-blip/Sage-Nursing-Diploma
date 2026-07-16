@@ -25,6 +25,7 @@ export async function getSessionProfile(): Promise<Profile | null> {
 export async function requireRole(role: UserRole): Promise<Profile> {
   const profile = await getSessionProfile();
   if (!profile) redirect("/login");
+  if (profile.status === "inactive") redirect("/inactive");
   if (profile.status === "invited") redirect("/accept-invite");
   if (profile.role !== role) redirect(`/${profile.role}`);
   return profile;

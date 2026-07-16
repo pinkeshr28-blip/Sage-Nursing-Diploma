@@ -1,6 +1,13 @@
 import { createClient } from "@/lib/supabase/server";
 import { cohortLabel } from "@/lib/cohorts";
 import { InviteForm } from "@/components/admin/InviteForm";
+import { CandidateStatusToggle } from "@/components/admin/CandidateStatusToggle";
+
+function statusPill(status: "invited" | "active" | "inactive") {
+  if (status === "active") return { cls: "pill-sage", label: "Active" };
+  if (status === "inactive") return { cls: "pill-coral", label: "Inactive" };
+  return { cls: "pill-gold", label: "Invited" };
+}
 
 export default async function AdminPeoplePage() {
   const supabase = await createClient();
@@ -28,12 +35,13 @@ export default async function AdminPeoplePage() {
               <th>Email</th>
               <th>Cohort</th>
               <th>Status</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
             {candidates.length === 0 && (
               <tr>
-                <td colSpan={4} className="muted">
+                <td colSpan={5} className="muted">
                   No candidates invited yet.
                 </td>
               </tr>
@@ -44,9 +52,12 @@ export default async function AdminPeoplePage() {
                 <td className="mono muted">{c.email}</td>
                 <td>{cohortLabel(c.cohort_id)}</td>
                 <td>
-                  <span className={`pill ${c.status === "active" ? "pill-sage" : "pill-gold"}`}>
-                    {c.status === "active" ? "Active" : "Invited"}
+                  <span className={`pill ${statusPill(c.status).cls}`}>
+                    {statusPill(c.status).label}
                   </span>
+                </td>
+                <td>
+                  <CandidateStatusToggle candidateId={c.id} status={c.status} />
                 </td>
               </tr>
             ))}
@@ -83,8 +94,8 @@ export default async function AdminPeoplePage() {
                 <td style={{ fontWeight: 600 }}>{a.full_name ?? "—"}</td>
                 <td className="mono muted">{a.email}</td>
                 <td>
-                  <span className={`pill ${a.status === "active" ? "pill-sage" : "pill-gold"}`}>
-                    {a.status === "active" ? "Active" : "Invited"}
+                  <span className={`pill ${statusPill(a.status).cls}`}>
+                    {statusPill(a.status).label}
                   </span>
                 </td>
               </tr>

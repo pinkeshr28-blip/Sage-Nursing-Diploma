@@ -146,3 +146,21 @@ export async function removeQuestion(questionId: string): Promise<ActionResult> 
   revalidatePath("/admin/config");
   return { success: true };
 }
+
+export async function setCandidateStatus(
+  candidateId: string,
+  status: "active" | "inactive",
+): Promise<ActionResult> {
+  await requireRole("admin");
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ status })
+    .eq("id", candidateId)
+    .eq("role", "candidate");
+
+  if (error) return { error: error.message };
+  revalidatePath("/admin/people");
+  return { success: true };
+}

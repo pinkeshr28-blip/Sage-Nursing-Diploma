@@ -10,7 +10,7 @@ export type ItemStatus =
   | "pass";
 export type ItemSection = "preparation" | "knowledge" | "performance" | "reflection";
 export type NotificationKind = "sage" | "coral" | "gold";
-export type ProfileStatus = "invited" | "active";
+export type ProfileStatus = "invited" | "active" | "inactive";
 
 export interface Database {
   public: {
