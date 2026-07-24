@@ -91,6 +91,7 @@ export interface Database {
           reviewed_at: string | null;
           reviewed_by: string | null;
           overdue_reminder_sent_at: string | null;
+          digest_sent_at: string | null;
         };
         Insert: {
           student_id: string;
@@ -110,6 +111,7 @@ export interface Database {
           reviewed_at: string | null;
           reviewed_by: string | null;
           overdue_reminder_sent_at: string | null;
+          digest_sent_at: string | null;
         }>;
         Relationships: [];
       };
@@ -136,6 +138,7 @@ export interface Database {
           body: string;
           kind: NotificationKind;
           created_at: string;
+          read_at: string | null;
         };
         Insert: {
           from_profile_id?: string | null;
@@ -154,6 +157,7 @@ export interface Database {
           subject: string;
           body: string;
           kind: NotificationKind;
+          read_at: string | null;
         }>;
         Relationships: [];
       };

@@ -14,8 +14,8 @@ interface NotifyInput {
   kind: NotificationKind;
 }
 
-/** Logs to the notifications table (audit trail / in-app inbox) and sends the real email. */
-export async function sendNotification(input: NotifyInput) {
+/** Logs to the notifications table only (in-app inbox / pop-up) — no email sent. */
+export async function logNotification(input: NotifyInput) {
   const supabaseAdmin = createAdminClient();
 
   await supabaseAdmin.from("notifications").insert({
@@ -27,6 +27,11 @@ export async function sendNotification(input: NotifyInput) {
     body: input.body,
     kind: input.kind,
   });
+}
+
+/** Logs to the notifications table (audit trail / in-app inbox) and sends the real email. */
+export async function sendNotification(input: NotifyInput) {
+  await logNotification(input);
 
   await sendEmail({
     to: input.toEmail,
@@ -38,6 +43,8 @@ export async function sendNotification(input: NotifyInput) {
 /**
  * There's no fixed assessor-per-candidate mapping (any assessor can pick any cohort),
  * so upload notifications broadcast to every active assessor rather than one fixed person.
+ * This only logs in-app (pop-up/inbox) — assessors get a single daily digest EMAIL instead
+ * of one email per upload (see /api/cron/assessor-digest).
  */
 export async function notifyAllAssessors(
   input: Omit<NotifyInput, "toId" | "toEmail">,
@@ -51,7 +58,7 @@ export async function notifyAllAssessors(
 
   await Promise.all(
     (assessors ?? []).map((a) =>
-      sendNotification({ ...input, toId: a.id, toEmail: a.email }),
+      logNotification({ ...input, toId: a.id, toEmail: a.email }),
     ),
   );
 }

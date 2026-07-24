@@ -1,7 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
+import { getSessionProfile } from "@/lib/auth";
+import { markAllNotificationsRead } from "@/lib/notifications";
 import { NotificationList } from "@/components/NotificationList";
 
 export default async function CandidateInboxPage() {
+  const profile = await getSessionProfile();
+  if (profile) await markAllNotificationsRead(profile.id);
+
   const supabase = await createClient();
   const { data } = await supabase
     .from("notifications")

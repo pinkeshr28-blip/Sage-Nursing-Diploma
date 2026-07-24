@@ -8,7 +8,7 @@ import type { Database } from "@/lib/database.types";
 
 type SubmissionItem = Database["public"]["Tables"]["submission_items"]["Row"];
 
-export default async function AssessorMatrixPage({
+export default async function AdminMatrixPage({
   searchParams,
 }: {
   searchParams: Promise<{ cohort?: string; unit?: string }>;
@@ -23,7 +23,7 @@ export default async function AssessorMatrixPage({
       .select("id,full_name,email")
       .eq("role", "candidate")
       .eq("cohort_id", cohortId),
-    supabase.from("units").select("*").eq("published", true).order("sort_order"),
+    supabase.from("units").select("*").order("sort_order"),
   ]);
 
   if (!units || units.length === 0) {
@@ -31,7 +31,7 @@ export default async function AssessorMatrixPage({
       <>
         <CohortPicker />
         <div className="card">
-          <p className="muted">No units published yet.</p>
+          <p className="muted">No units created yet.</p>
         </div>
       </>
     );
@@ -83,8 +83,8 @@ export default async function AssessorMatrixPage({
         <p className="muted">
           P = Pass · R = Revision needed · U = Uploaded, pending · – = not started. Click a cell
           to set a candidate&apos;s status directly — no notification is sent, so use this for
-          backfilling work completed before this platform, not for live review (use the Review
-          Queue for that).
+          backfilling work completed before this platform (e.g. mid-course rollout), not for
+          live review.
         </p>
       </div>
       <UnitPicker units={units.map((u) => ({ id: u.id, title: u.title }))} selectedUnitId={selectedUnitId} />
